@@ -23,6 +23,12 @@ indicates binding to all available interfaces.
 The port that the `nREPL` server is bound to. If no port is defined then the default value
 of `7888` is used.
 
+### `transport`
+
+The transport function that the `nREPL` should use.  Valid values are `"tty"`
+and `"bencode"`.  When this is set to tty you can connect to the nREPL with
+regular telnet.
+
 ## Typical `config.ini` for nREPL
 
 ```ini

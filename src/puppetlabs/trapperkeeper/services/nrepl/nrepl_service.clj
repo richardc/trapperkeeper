@@ -9,15 +9,20 @@
 ;; If no port is specified in the config then 7888 is used
 (def ^{:private true} default-nrepl-port 7888)
 (def ^{:private true} default-bind-addr  "0.0.0.0")
+(def ^{:private true} default-transport  "bencode")
 
 (defn- startup-nrepl
   [get-in-config]
   (let [enabled?     (parse-bool (get-in-config [:nrepl :enabled]))
         port         (get-in-config [:nrepl :port] default-nrepl-port)
-        bind         (get-in-config [:nrepl :host] default-bind-addr)]
+        bind         (get-in-config [:nrepl :host] default-bind-addr)
+        transport    (get-in-config [:nrepl :transport] default-transport)
+        transport-fn (case transport
+                       "tty"  clojure.tools.nrepl.transport/tty
+                       clojure.tools.nrepl.transport/bencode)]
     (if enabled?
-      (do (log/info "Starting nREPL service on" bind "port" port)
-          (nrepl/start-server :port port :bind bind))
+      (do (log/info "Starting nREPL service on" bind "port" port "with transport" transport)
+          (nrepl/start-server :port port :bind bind :transport-fn transport-fn))
       (log/info "nREPL service disabled, not starting"))))
 
 (defn- shutdown-nrepl
